@@ -4,5 +4,5 @@ Specifications used to deploy a Splunk Cluster on the Ezmeral Container Platform
 - Istio is used to handle ingress
 
 To launch the Splunk Cluster:
-- Launch the operator (kubectl apply -f <url-of-splunk-operator-yaml-file>)
+- Launch the operator (kubectl apply -f url-of-splunk-operator-yaml-file)
 - Launch the splunk instance (kubectl apply -f ./deploy-splunk.yaml)
