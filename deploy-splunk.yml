@@ -1,0 +1,96 @@
+apiVersion: enterprise.splunk.com/v1
+kind: LicenseMaster
+metadata:
+  name: morgan-license
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  imagePullPolicy: IfNotPresent
+  etcVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  varVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  volumes:
+    - name: licenses
+      configMap:
+        name: splunk-licenses
+  licenseUrl: /mnt/licenses/Splunk1.License,/mnt/licenses/Splunk2.license
+  #licenseUrl: /mnt/licenses/Splunk1.License
+  #licenseUrl: /mnt/licenses/Splunk2.License
+---
+apiVersion: enterprise.splunk.com/v1
+kind: ClusterMaster
+metadata:
+  name: cm
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  imagePullPolicy: IfNotPresent
+  etcVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  varVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  licenseMasterRef:
+    name: morgan-license
+  volumes:
+    - name: apps
+      configMap: 
+        name: smartstore-app
+  defaults: |-
+    splunk:
+      apps_location:
+        - "/mnt/apps/smartstore.tgz"
+  smartstore:
+    defaults:
+#      remotePath: $_index_name
+      volumeName: smartstore
+    volumes:
+      - name: smartstore
+        path: morgansplunk
+        endpoint: http://s3.scality.atlpss.hp.net
+        secretRef: smart-store-secret
+---
+apiVersion: enterprise.splunk.com/v1
+kind: IndexerCluster
+metadata:
+  name: morgan-idx
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  imagePullPolicy: IfNotPresent
+  clusterMasterRef:
+    name: cm
+  replicas: 7
+  etcVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  varVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  resources:
+    requests:
+      cpu: "12"
+      memory: "256Gi"
+    limits:
+      cpu: "12"
+      memory: "256Gi"  
+  # serviceTemplate:
+  #   spec:
+  #      type: NodePort
+---
+apiVersion: enterprise.splunk.com/v1
+kind: SearchHeadCluster
+metadata:
+  name: morgan-sh
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  imagePullPolicy: IfNotPresent
+  clusterMasterRef:
+    name: cm
+  replicas: 3
+  etcVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  varVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+  # serviceTemplate:
+  #   spec:
+  #      type: NodePort

@@ -1,0 +1,118 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-search
+spec:
+  hosts:
+  - "morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-web"
+  http:
+  - match:
+    - uri:
+        prefix: "/services/collector"
+    route:
+    - destination:
+        port:
+          number: 8088
+        host: splunk-morgan-idx-indexer-service
+  - route:      
+    - destination:
+        port:
+          number: 8000
+        host: splunk-morgan-sh-search-head-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-deployer
+spec:
+  hosts: 
+  - "deployer.morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-web"
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: splunk-morgan-sh-deployer-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-monitoring-console
+spec:
+  hosts: 
+  - "monitoring-console.morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-web"
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: splunk-morgan-prod-monitoring-console-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-cluster-master
+spec:
+  hosts: 
+  - "cluster-master.morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-web"
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: splunk-cm-cluster-master-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-license-master
+spec:
+  hosts: 
+  - "license-master.morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-web"
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: splunk-morgan-license-license-master-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: splunk-search-head-rule
+spec:
+  host: splunk-morgan-sh-search-head-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: SPLUNK_ISTIO_SESSION
+          ttl: 3600s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunk-s2s
+spec:
+  hosts:
+  - "morgansplunk.atlpss.hp.net"
+  gateways:
+  - "splunk-s2s"
+  tcp:
+  - match:
+    - port: 9997
+    route:
+    - destination:
+        port:
+          number: 9997
+        host: splunk-morgan-idx-indexer-service

@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: splunk-web
+spec:
+  selector:
+    istio: ingressgateway # use istio default ingress gateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "morgansplunk.atlpss.hp.net"
+    - "deployer.morgansplunk.atlpss.hp.net"
+    - "cluster-master.morgansplunk.atlpss.hp.net"
+    - "license-master.morgansplunk.atlpss.hp.net"
+    - "monitoring-console.morgansplunk.atlpss.hp.net"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: splunk-s2s
+spec:
+  selector:
+    istio: ingressgateway # use istio default ingress gateway
+  servers:
+  - port:
+      number: 9997
+      name: tcp-s2s
+      protocol: TCP
+    hosts:
+    - "morgansplunk.atlpss.hp.net"
