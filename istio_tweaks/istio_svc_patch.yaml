@@ -1,0 +1,17 @@
+spec: 
+  ports: 
+  - port: 443 
+    targetPort: 8443 
+    name: "https" 
+  - port: 80 
+    targetPort: 8080
+    name: "http-web" 
+  - port: 8088 
+    targetPort: 8088 
+    name: "http-hec" 
+  - port: 8089 
+    targetPort: 8089 
+    name: "https-hec" 
+  - port: 9997 
+    targetPort: 9997 
+    name: "s2s" 

@@ -1,0 +1,28 @@
+apiVersion: enterprise.splunk.com/v1
+kind: Standalone
+metadata:
+  name: gogen-test
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  etcVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+    storageCapacity: 15Gi
+  varVolumeStorageConfig:
+    storageClassName: openebs-hostpath
+    storageCapacity: 4000Gi
+  volumes:
+    - name: licenses
+      configMap:
+        name: splunk-licenses
+  licenseUrl: /mnt/licenses/Splunk.License
+  serviceTemplate:
+    spec:
+      type: NodePort
+  resources:
+    requests:
+      cpu: "36"
+      memory: "128Gi"
+    limits:
+      cpu: "36"
+      memory: "128Gi"  

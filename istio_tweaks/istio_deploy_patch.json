@@ -1,0 +1,13 @@
+{
+  spec: {
+      replicas: 3
+      template: {
+         spec: {
+            nodeSelector: {istio-ingressgateway : true},
+            containers: [
+               {name : istio-proxy, ports: [{containerPort : 8080, hostPort : 80, protocol: TCP}, {containerPort:8443, hostPort: 443, protocol : TCP},{containerPort : 8088, hostPort : 8088, protocol: TCP},{containerPort : 8089, hostPort : 8089, protocol: TCP},{containerPort:9997, hostPort: 9997, protocol : TCP}]}
+            ]
+         }
+      }
+   }
+}
