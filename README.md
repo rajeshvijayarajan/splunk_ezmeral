@@ -3,15 +3,17 @@ Specifications used to deploy a Splunk Cluster on the Ezmeral Container Platform
 - OpenEBS-hostpath is used as the Persistent Volume provider
 - Istio is used to handle ingress
 
-To launch the Splunk Cluster:
+__To launch the Splunk Cluster:__
 - Launch the operator (kubectl apply -f https://github.com/splunk/splunk-operator/releases/download/1.0.1/splunk-operator-install.yaml)
 - Launch the splunk instance (kubectl apply -f ./deploy-splunk.yml)
 
 __Some handy tips that are not captured in the deployment manifest:__
 
 Create a Splunk app to encode the region associated with the S3 storage:
-    tar -cvzf smartstore.tgz smartstore
-    kubectl create cm smartstore-app --from-file=./smartstore.tgz
+```
+tar -cvzf smartstore.tgz smartstore
+kubectl create cm smartstore-app --from-file=./smartstore.tgz
+```
 
 Create a configmap for licenses (supports stacking):
 - kubectl create configmap splunk-licenses --from-file=./Splunk1.license --from-file=./Splunk2.license
